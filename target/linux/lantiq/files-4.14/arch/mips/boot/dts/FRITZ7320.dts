@@ -6,7 +6,7 @@
 
 / {
 	compatible = "avm,fritz7320", "lantiq,xway", "lantiq,ar9";
-	model = "1&1 HomeServer";
+	model = "FritzBox 7320 (1&1 HomeServer)";
 
 	chosen {
 		bootargs = "console=ttyLTQ0,115200";
@@ -14,7 +14,7 @@
 
 	aliases {
 		led-boot = &power;
-		led-failsafe = &power;
+		led-failsafe = &info_red;
 		led-running = &power;
 
 		led-internet = &info_green;
@@ -67,7 +67,7 @@
 			label = "fritz7320:green:info";
 			gpios = <&gpio 35 GPIO_ACTIVE_LOW>;
 		};
-		info_red {
+		info_red: info_red {
 			label = "fritz7320:red:info";
 			gpios = <&gpio 45 GPIO_ACTIVE_LOW>;
 		};
@@ -94,13 +94,41 @@
 			lantiq,output = <1>;
 			lantiq,pull = <0>;
 		};
+		ar8030-intr {
+			lantiq,groups = "exin3";
+			lantiq,function = "exin";
+			lantiq,pull = <2>;
+			lantiq,output = <0>;
+		};
+		ar8030-clk {
+			lantiq,groups = "clkout2";
+			lantiq,output = <1>;
+			lantiq,open-drain;
+		};
+		ar8030-rst {
+			lantiq,pins = "io34";
+			lantiq,output = <1>;
+			lantiq,pull = <2>;
+			lantiq,open-drain;
+		};
 	};
 };
 
 &gsw {
 	phy-mode = "mii";
+	phy-handle = <&phy0>;
 	mtd-mac-address = <&ath9k_cal 0xa91>;
 	mtd-mac-address-increment = <(-2)>;
+	
+	mdio-bus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+		reg = <0>;
+		phy0: ethernet-phy@0 {
+			reg = <0>;
+			reset-gpios = <&gpio 34 GPIO_ACTIVE_LOW>;
+		};
+	};
 };
 
 &localbus {
